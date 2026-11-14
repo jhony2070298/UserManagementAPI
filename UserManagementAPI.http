@@ -1,0 +1,116 @@
+@UserManagementAPI_HostAddress = http://localhost:5095
+# Set Authentication__BearerToken before starting the API and use the same value below.
+@token = <un-token-nuevo-y-aleatorio>
+@userId = b7af0d35-f30c-4eef-8c27-521669e6940f
+@missingUserId = 00000000-0000-0000-0000-000000000001
+
+### Reject a missing token (401)
+GET {{UserManagementAPI_HostAddress}}/api/users
+Accept: application/json
+
+###
+
+### Reject an invalid token (401)
+GET {{UserManagementAPI_HostAddress}}/api/users
+Authorization: Bearer invalid-token
+Accept: application/json
+
+###
+
+### List users
+GET {{UserManagementAPI_HostAddress}}/api/users
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### Create a user (copy the returned ID into @userId for the following requests)
+POST {{UserManagementAPI_HostAddress}}/api/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Alex Morgan",
+  "email": "alex.morgan@techhive.example",
+  "department": "IT"
+}
+
+###
+
+### Reject invalid input (400)
+POST {{UserManagementAPI_HostAddress}}/api/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": " ",
+  "email": "not-an-email",
+  "department": ""
+}
+
+###
+
+### Reject a null request body (400)
+POST {{UserManagementAPI_HostAddress}}/api/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+null
+
+###
+
+### Return 404 for a user that does not exist
+GET {{UserManagementAPI_HostAddress}}/api/users/{{missingUserId}}
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### Retrieve a user by ID
+GET {{UserManagementAPI_HostAddress}}/api/users/{{userId}}
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### Update a user
+PUT {{UserManagementAPI_HostAddress}}/api/users/{{userId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Alex Morgan",
+  "email": "alex.morgan@techhive.example",
+  "department": "Human Resources"
+}
+
+###
+
+### Return 404 when updating a user that does not exist
+PUT {{UserManagementAPI_HostAddress}}/api/users/{{missingUserId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Alex Morgan",
+  "email": "alex.morgan@techhive.example",
+  "department": "IT"
+}
+
+###
+
+### Delete a user
+DELETE {{UserManagementAPI_HostAddress}}/api/users/{{userId}}
+Authorization: Bearer {{token}}
+
+###
+
+### Return 404 when deleting a user that does not exist
+DELETE {{UserManagementAPI_HostAddress}}/api/users/{{missingUserId}}
+Authorization: Bearer {{token}}
+
+###
+
+### Return a consistent 500 error (Development only)
+GET {{UserManagementAPI_HostAddress}}/api/diagnostics/exception
+Authorization: Bearer {{token}}
